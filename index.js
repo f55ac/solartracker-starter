@@ -1,52 +1,66 @@
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.8.3/firebase-app.js'
+import { getDatabase, ref, child, get, push, remove, set } from 'https://www.gstatic.com/firebasejs/9.8.3/firebase-database.js'
 
-import { initializeApp } from "firebase/app";
-import { getDatabase, get, query, set, push, remove,  ref, orderByKey, equalTo } from "firebase/database";
-
-// Your web app's Firebase configuration
 const firebaseConfig = {
-  // ...
-  // The value of `databaseURL` depends on the location of the database
-  databaseURL: "https://DATABASE_NAME.firebaseio.com",
+  apiKey: "AIzaSyDv83pED-6O5_FTzewJ_9MeaMREO2I3CwU",
+  authDomain: "esp32-firebase-48b88.firebaseapp.com",
+  databaseURL: "https://esp32-firebase-48b88-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "esp32-firebase-48b88",
+  storageBucket: "esp32-firebase-48b88.appspot.com",
+  messagingSenderId: "414288100642",
+  appId: "1:414288100642:web:1b80bca52d40b6c59a797b"
 };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-
-// Initialize Realtime Database and get a reference to the service
-const database = getDatabase(app);
-
 const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);
 
-function getEverything() {
-    return get(ref(database, "/")).then(snapshot=>snapshot.val());
+async function getPath(path, callback) {
+    // If the user forgot to add a '/' in front, add it for them
+    if (path[0] !== "/") path = "/" + path; 
+
+    const database_snapshot = await get(ref(database, path));
+    callback( database_snapshot);
 }
-async function pushUp(path, object) {
+async function pushPath(path, object) {
     await push(ref(database, path), object);
 }
-async function setUp(path, object) {
+async function setPath(path, object) {
     await set(ref(database, path), object);
 }
-async function removeUp(path, object) {
+async function removePath(path, object) {
     await push(ref(database, path), object);
 }
 
-async function firebaseFindUUID(path, uuid) {
-    let newQuery = query(ref(database, "/ideas"), equalTo(uuid));
-    //newQuery = query(query, equalTo(uuid));
-    //console.log(newQuery);
+// a callback function is typically used in asynchronous (async) code
+// to do something after an asynchronous operation is done (like a 
+// network request finishing) 
+function callbackSetConsole(snapshot) {
+    const data = snapshot.val(); // .val() turns the database snapshot into useable data
 
-    //console.log(get(newQuery).then((snapshot)=>snapshot.val()));
-    return get(newQuery).then(s=>s);;
+    document.getElementById("read").value = JSON.stringify(data); 
+    
+    // successfully set the value?
+    //if (document.getElementById("read").value === JSON.stringify(data))
+    //    return true;
+    //else
+    //    return false;
 }
 
-pushUp("/ideas", {
-    description: "Make this thing more secure",
-    epoch: 1662914119,
-    uuid: crypto.randomUUID()
+let readbutton = document.getElementById("readbutton");
+let sendbutton = document.getElementById("sendbutton");
+
+readbutton.addEventListener("click", () => {
+    const path = document.getElementById("read-path").value;
+    
+    // async function getPath(path, callback) {
+    getPath(path, callbackSetConsole);
+});
+sendbutton.addEventListener("click", () => {
+    const path = document.getElementById("send-path").value;
+    const send_data = JSON.parse(document.getElementById("send").value);
+     
+    // async function setPath(path, object) {
+    setPath(path, send_data);
 });
 
-let data = await getUp();
-console.log(data);
 
-//await firebaseFindUUID("9a7a80f0-e6ae-431c-9373-39af7ddbdfb4");

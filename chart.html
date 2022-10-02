@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>My Chart</title>
+    </head>
+
+    <!-- 
+    The "myChart" canvas in the html should come first, then
+    the chart.js library from jsdelivr.net, then finally our
+    own page code (chart.js)
+
+    If the order is messed up, you might see the error:
+    !!Failed to create chart: can't acquire context from the given item!!
+    -->
+
+    <body>
+        <h1>Chart</h1>
+        <div class="chart">
+            <canvas id="myChart"></canvas>
+        </div>
+    </body>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="chart.js" type="module"></script>
+
+</html>
+
+<style>
+    .chart {
+        width: 1000px;
+        height: 700px;
+    }
+</style>
